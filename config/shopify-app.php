@@ -193,7 +193,8 @@ return [
     |
     */
 
-    'api_scopes' => env('SHOPIFY_API_SCOPES', 'read_products,write_products,read_themes'),
+    'api_scopes' => env('SHOPIFY_API_SCOPES', 'read_products,write_products,read_themes,read_customers,read_orders,write_orders,read_fulfillments,
+    write_fulfillments,read_inventory,write_inventory,read_shipping,write_shipping,read_returns,write_returns'),
 
     /*
     |--------------------------------------------------------------------------
@@ -385,22 +386,27 @@ return [
     */
 
     'webhooks' => [
-        /*
-            [
-                'topic' => env('SHOPIFY_WEBHOOK_1_TOPIC', 'ORDERS_CREATE'),
-                'address' => env('SHOPIFY_WEBHOOK_1_ADDRESS', 'https://some-app.com/webhook/orders-create')
-            ], [
-                'topic' => env('SHOPIFY_WEBHOOK_2_TOPIC', 'APP_PURCHASES_ONE_TIME_UPDATE'),
-                'address' => env('SHOPIFY_WEBHOOK_2_ADDRESS', 'https://some-app.com/webhook/purchase'),
-            ]
-            // In certain situations you may wish to map the webhook to a specific class
-            // To do this, change the array to an associative array with a 'class' key
-            'orders-create' => [
-                'topic' => env('SHOPIFY_WEBHOOK_3_TOPIC', 'ORDERS_PAID'),
-                'address' => env('SHOPIFY_WEBHOOK_3_ADDRESS', 'https://some-app.com/webhook/orders-create'),
-                'class' => \App\Shopify\Actions\ExampleAppJob::class
-            ],
-        */],
+        [
+            'topic' => env('SHOPIFY_WEBHOOK_1_TOPIC', 'APP_UNINSTALLED'),
+            'address' => env('SHOPIFY_WEBHOOK_1_ADDRESS', env('APP_URL').'/webhook/app-uninstalled')
+        ],
+        [
+            'topic' => env('SHOPIFY_WEBHOOK_2_TOPIC', 'ORDERS_CREATE'),
+            'address' => env('SHOPIFY_WEBHOOK_2_ADDRESS', env('APP_URL').'/webhook/orders-create')
+        ],
+        [
+            'topic' => env('SHOPIFY_WEBHOOK_3_TOPIC', 'ORDERS_UPDATED'),
+            'address' => env('SHOPIFY_WEBHOOK_3_ADDRESS', env('APP_URL').'/webhook/orders-update')
+        ],
+        [
+            'topic' => env('SHOPIFY_WEBHOOK_4_TOPIC', 'PRODUCTS_CREATE'),
+            'address' => env('SHOPIFY_WEBHOOK_4_ADDRESS', env('APP_URL').'/webhook/products-create')
+        ],
+        [
+            'topic' => env('SHOPIFY_WEBHOOK_5_TOPIC', 'PRODUCTS_UPDATE'),
+            'address' => env('SHOPIFY_WEBHOOK_5_ADDRESS', env('APP_URL').'/webhook/products-update')
+        ]
+    ],
 
     /*
     |--------------------------------------------------------------------------

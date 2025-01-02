@@ -16,4 +16,9 @@ class Event extends Model
         'status',
         'shop_id',
     ];
+
+    public function eventSales()
+    {
+        return $this->hasMany(EventSale::class);
+    }
 }
