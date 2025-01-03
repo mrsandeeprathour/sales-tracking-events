@@ -11,13 +11,17 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $token = $request->session()->token();
+
         $events = Event::all();
 
         return Inertia::render('Events/Index', [
-            'events' => $events
+            'events' => $events,
+            "csrf_token"=> $token
         ]);
+
     }
 
     /**
@@ -33,6 +37,7 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+
         $validated = $request->validate([
         'event_name' => 'required|string|max:255',
         'start_date' => 'required|date',

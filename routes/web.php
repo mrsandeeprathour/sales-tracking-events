@@ -7,12 +7,14 @@ use App\Http\Controllers\ProductController;
 
 use Inertia\Inertia;
 
-Route::get('/', function (Request $request) {
-    return inertia('Home');
-})->middleware(['verify.shopify'])->name('home');
-// Route::inertia('/', 'Home');
+Route::get('/', [EventController::class, 'index'])->middleware(['verify.shopify'])->name('home');
+
 Route::resource('events', EventController::class);
 Route::resource('products', ProductController::class);
 Route::get('/sync-products', [ProductController::class, 'syncProducts']);
+
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->noContent();
+});
 
 

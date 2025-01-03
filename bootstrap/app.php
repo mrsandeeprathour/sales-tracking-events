@@ -1,10 +1,9 @@
 <?php
 
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Http\Middleware\HandleInertiaRequests;
-
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,11 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware) {
+    ->withMiddleware(function ($middleware) {
+        // Add your middlewares here, including the CSRF Token validation one
         $middleware->web(append: [
             HandleInertiaRequests::class,
         ]);
+
+        // Disable CSRF Token for all routes
+        // $middleware->validateCsrfTokens(except: [
+        //     '*'  // This disables CSRF validation for all routes
+        // ]);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
-        //
-    })->create();
+    ->withExceptions(function ($exceptions) {
+
+    })
+    ->create();
