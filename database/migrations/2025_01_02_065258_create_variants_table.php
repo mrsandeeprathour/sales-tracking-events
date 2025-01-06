@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('variants', function (Blueprint $table) {
             $table->id();
-            $table->string('variant_id')->unique();
-            $table->foreignId('product_id')->constrained('products'); // Foreign key referencing the products table
+            $table->string('variant_id');
+            $table->unsignedBigInteger('product_id');
+
             $table->string('title');
             $table->decimal('price', 8, 2); // For price, you can change the precision if needed
             $table->string('sku')->nullable();

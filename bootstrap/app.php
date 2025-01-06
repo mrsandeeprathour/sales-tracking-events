@@ -17,10 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
         ]);
 
-        // Disable CSRF Token for all routes
-        // $middleware->validateCsrfTokens(except: [
-        //     '*'  // This disables CSRF validation for all routes
-        // ]);
+        $middleware->validateCsrfTokens(except: [
+            '*'  // This disables CSRF validation for all routes
+        ]);
     })
     ->withExceptions(function ($exceptions) {
 

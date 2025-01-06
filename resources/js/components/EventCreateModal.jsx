@@ -1,80 +1,129 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, TextField, Toast } from '@shopify/polaris';
-import { useForm } from '@inertiajs/react';
-
-
-import axios from 'axios';
-
-
+import { router, usePage } from '@inertiajs/react';
 
 export default function EventCreateModal({ active, onClose }) {
+  const { props } = usePage();
 
-
-
-
-  // Initialize useForm hook
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const [formData, setFormData] = useState({
     event_name: '',
     start_date: '',
-    end_date: '',
-    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      end_date: '',
+      shop: props?.config?.shop,
+     status:"active"
   });
 
-  // Handle form input changes
+  const [isLoading, setIsLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [toastError, setToastError] = useState(false); // Track toast error state
+  const [errors, setErrors] = useState({});
+
+  // Handle server-side errors and display toast
+  useEffect(() => {
+    if (props.errors) {
+      setErrors(props.errors);
+      const errorMessages = Object.values(props.errors).flat().join(', ');
+      setToastMessage(errorMessages);
+      setToastError(true); // Set toast type to error
+    }
+  }, [props.errors]);
+
+  // Clear errors and reset toast on modal close
+  useEffect(() => {
+    if (!active) {
+      setFormData({
+        event_name: '',
+        start_date: '',
+          end_date: '',
+           shop: props?.config?.shop,
+         status:"active"
+      });
+      setErrors({});
+      setToastMessage(null);
+      setToastError(false);
+    }
+  }, [active]);
+
+  // Handle input changes and clear specific field errors
   const handleInputChange = (field, value) => {
-      setData(field, value); // Update form data
-      axios.get('/sanctum/csrf-cookie').then(() => {
-        console.log('CSRF token refreshed.');
-    });
+    setFormData({ ...formData, [field]: value });
+    setErrors({ ...errors, [field]: null });
+  };
+
+  // Validate form fields
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.event_name) newErrors.event_name = 'Event name is required.';
+    if (!formData.start_date) newErrors.start_date = 'Start date is required.';
+    if (!formData.end_date) newErrors.end_date = 'End date is required.';
+    if (
+      formData.start_date &&
+      formData.end_date &&
+      new Date(formData.end_date) < new Date(formData.start_date)
+    ) {
+      newErrors.end_date = 'End date must be greater than or equal to start date.';
+    }
+    return newErrors;
   };
 
   // Handle form submission
-  const handleEventCreate = () => {
-    post('/events', {
-      onSuccess: () => {
-        // Show success message and reset the form
-        setToastMessage('Event created successfully!');
-        reset();
-        onClose(); // Close the modal
-      },
-      onError: () => {
-        // Errors will be handled automatically by `errors` object
-        setToastMessage('Failed to create event.');
-      },
-    });
-  };
+  const handleEventCreate = async () => {
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-  // Toast message state
-  const [toastMessage, setToastMessage] = React.useState(null);
+    setIsLoading(true);
+    try {
+      await router.post(
+        '/events',
+        formData,
+        {
+          onSuccess: () => {
+            setToastMessage('Event created successfully!');
+            setToastError(false); // Success toast
+            onClose();
+          },
+          onError: (serverErrors) => {
+            setErrors(serverErrors || {});
+            const errorMessages = Object.values(serverErrors).flat().join(', ');
+            setToastMessage(errorMessages);
+            setToastError(true); // Error toast
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error:', error);
+      setToastMessage('An unexpected error occurred.');
+      setToastError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
       <Modal
         open={active}
-        onClose={() => {
-          reset(); // Reset the form when closing the modal
-          onClose();
-        }}
+        onClose={onClose}
         title="Create New Event"
         primaryAction={{
-          content: processing ? 'Creating...' : 'Create',
+          content: isLoading ? 'Creating...' : 'Create',
           onAction: handleEventCreate,
-          disabled: processing, // Disable button while processing
+          disabled: isLoading,
         }}
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: () => {
-              reset(); // Reset the form on cancel
-              onClose();
-            },
+            onAction: onClose,
           },
         ]}
       >
         <Modal.Section>
           <TextField
             label="Event Name"
-            value={data.event_name}
+            value={formData.event_name}
             onChange={(value) => handleInputChange('event_name', value)}
             error={errors.event_name}
             autoComplete="off"
@@ -82,7 +131,7 @@ export default function EventCreateModal({ active, onClose }) {
           <TextField
             label="Start Date"
             type="date"
-            value={data.start_date}
+            value={formData.start_date}
             onChange={(value) => handleInputChange('start_date', value)}
             error={errors.start_date}
             autoComplete="off"
@@ -90,7 +139,7 @@ export default function EventCreateModal({ active, onClose }) {
           <TextField
             label="End Date"
             type="date"
-            value={data.end_date}
+            value={formData.end_date}
             onChange={(value) => handleInputChange('end_date', value)}
             error={errors.end_date}
             autoComplete="off"
@@ -102,6 +151,7 @@ export default function EventCreateModal({ active, onClose }) {
         <Toast
           content={toastMessage}
           onDismiss={() => setToastMessage(null)}
+          error={toastError} // Show error style if true
         />
       )}
     </>

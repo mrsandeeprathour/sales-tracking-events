@@ -20,11 +20,6 @@ return new class extends Migration
             $table->integer('sold_inventory')->nullable();
             $table->integer('inhand_inventory')->nullable();
             $table->timestamps();
-
-            // Foreign key relationships
-            $table->foreign('variant_id')->references('id')->on('variants')->onDelete('cascade');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
         });
     }
 

@@ -14,7 +14,7 @@ return new class extends Migration
     Schema::create('products', function (Blueprint $table) {
         $table->id();
         $table->unsignedBigInteger('shop_id');
-        $table->string('product_id')->unique();
+        $table->string('product_id');
         $table->string('title');
         $table->string('handle')->nullable();
         $table->string('status')->nullable();; // You can modify status options as needed

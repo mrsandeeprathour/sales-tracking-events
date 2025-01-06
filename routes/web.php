@@ -16,5 +16,10 @@ Route::get('/sync-products', [ProductController::class, 'syncProducts']);
 Route::get('/sanctum/csrf-cookie', function () {
     return response()->noContent();
 });
+Route::get('/event-sale-details', [EventController::class, 'fetchEventSaleDetails']);
+Route::get('/token', function (Request $request) {
+    return $token = $request->session()->token();
+});
+
 
 

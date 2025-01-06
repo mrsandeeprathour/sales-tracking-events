@@ -1,26 +1,37 @@
 import './bootstrap';
 import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client'
 import '@shopify/polaris/build/esm/styles.css';
 
 import enTranslations from '@shopify/polaris/locales/en.json';
 import { AppProvider } from '@shopify/polaris';
-// import { Provider} from '@shopify/app-bridge-react';
-// import Layout from './Layouts/Layout';
-// console.log('Config', Config);
+
+
+import {   Frame  } from '@shopify/polaris';
+
+
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
-    resolve: name => {
-        const pages = import.meta.glob('./Pages/**/*.jsx', { eager: true })
-        return pages[`./Pages/${name}.jsx`]
-      },
-
+  title: (title) => `${title} - ${appName}`,
+  resolve: (name) =>
+      resolvePageComponent(
+          `./Pages/${name}.jsx`,
+          import.meta.glob('./Pages/**/*.jsx'),
+      ),
   setup({ el, App, props }) {
-      createRoot(el).render(
-          <AppProvider i18n={enTranslations}>
+      const root = createRoot(el);
+
+      root.render(<AppProvider ii18n={enTranslations} >
+        <Frame>
             <App {...props} />
-          </AppProvider >
-      )
-    },
-})
+        </Frame>
+      </AppProvider>);
+  },
+  progress: {
+      color: '#4B5563',
+  },
+});
+

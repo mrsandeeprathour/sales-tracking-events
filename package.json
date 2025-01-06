@@ -16,8 +16,10 @@
         "vite": "^6.0.6"
     },
     "dependencies": {
+        "@inertiajs/inertia-react": "^0.8.1",
         "@inertiajs/react": "^2.0.0",
         "@shopify/app-bridge-react": "^4.1.6",
+        "@shopify/app-bridge-utils": "^3.5.1",
         "@shopify/polaris": "^13.9.2",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
