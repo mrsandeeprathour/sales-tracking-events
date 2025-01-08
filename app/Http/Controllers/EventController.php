@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Inertia\Inertia;
-
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\User;
@@ -72,6 +72,7 @@ class EventController extends Controller
 
         // Dispatch the event processing job
         ProcessEventSales::dispatch($event, $user);
+        Artisan::call('queue:work --stop-when-empty');
 
         // Fetch all events for the shop to display
 

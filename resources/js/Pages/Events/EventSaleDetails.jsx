@@ -11,7 +11,6 @@ import {
 
 const EventSaleDetails = () => {
   const { props } = usePage();
-  console.log('props', props);
 
   // Ensure data is available and loop through eventSale object
   const dataToDisplay = props?.eventSale

@@ -97,8 +97,6 @@ export default function EventCreateModal({ active, onClose }) {
       console.error('Error:', error);
       setToastMessage('An unexpected error occurred.');
       setToastError(true);
-    } finally {
-      setIsLoading(false);
     }
   };
 
